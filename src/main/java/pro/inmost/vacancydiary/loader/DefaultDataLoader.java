@@ -82,7 +82,7 @@ public class DefaultDataLoader implements ApplicationRunner {
 
     private User createRandomUser() {
         String email = emailCounter == 0 ? "nazariy_miami@ukr.net" :
-                                String.format("testmail%d@gmail.com", emailCounter);
+            String.format("testmail%d@gmail.com", emailCounter);
         String password = generatePassword();
         int userVacanciesNumber = getRandomNumber(3, VACANCIES_NUMBER);
         List<Vacancy> vacancies = pickRandomVacancies(createdVacancies, userVacanciesNumber);

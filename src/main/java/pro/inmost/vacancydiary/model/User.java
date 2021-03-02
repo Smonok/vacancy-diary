@@ -7,11 +7,19 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "users")
+@DynamicUpdate
+@Getter
+@Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -23,16 +31,13 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    public List<Vacancy> getVacancies() {
-        return vacancies;
-    }
-
-    public void setVacancies(List<Vacancy> vacancies) {
-        this.vacancies = vacancies;
-    }
-
     @Column
     @ManyToMany
+    @JoinTable(
+        name = "users_vacancies",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "vacancies_id")
+    )
     private List<Vacancy> vacancies;
 
     @Override
@@ -52,31 +57,12 @@ public class User {
         return Objects.hash(id, email, password);
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public User() {
+    }
+
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
     public User(String email, String password, List<Vacancy> vacancies) {
