@@ -44,8 +44,7 @@ public class User {
             return false;
         }
         User user = (User) o;
-        return id == user.id &&
-            email.equals(user.email);
+        return email.equals(user.email) && password.equals(user.password);
     }
 
     @Override

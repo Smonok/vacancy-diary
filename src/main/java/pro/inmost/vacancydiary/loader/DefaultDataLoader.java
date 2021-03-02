@@ -30,6 +30,7 @@ public class DefaultDataLoader implements ApplicationRunner {
     private final String[] positions = {"Dev", "HR", "PM", "QA"};
     private final String[] statuses = {"Подался", "Дали тестовое", "Жду фидбека", "Скрининг",
         "Техническое собеседование", "Оффер", "Отказ", "Нет ответа"};
+    private int emailCounter = 0;
 
     @Autowired
     public DefaultDataLoader(UserController userController, VacancyController vacancyController) {
@@ -40,7 +41,7 @@ public class DefaultDataLoader implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         createVacancies();
-        createUsers();
+        registerUsers();
     }
 
     private void createVacancies() {
@@ -71,20 +72,22 @@ public class DefaultDataLoader implements ApplicationRunner {
         return array[index];
     }
 
-    private void createUsers() {
+    private void registerUsers() {
         for (int i = 0; i < USERS_NUMBER; i++) {
             User user = createRandomUser();
 
-            userController.create(user);
+            userController.register(user);
         }
     }
 
     private User createRandomUser() {
-        String email = "nazariy_miami@ukr.net";
+        String email = emailCounter == 0 ? "nazariy_miami@ukr.net" :
+                                String.format("testmail%d@gmail.com", emailCounter);
         String password = generatePassword();
         int userVacanciesNumber = getRandomNumber(3, VACANCIES_NUMBER);
         List<Vacancy> vacancies = pickRandomVacancies(createdVacancies, userVacanciesNumber);
 
+        emailCounter++;
         return new User(email, password, vacancies);
     }
 
