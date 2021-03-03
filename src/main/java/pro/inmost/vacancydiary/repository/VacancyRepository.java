@@ -15,4 +15,6 @@ public interface VacancyRepository extends JpaRepository<Vacancy, Long> {
     Page<Vacancy> findByUser(Long userId, Pageable pageable);
 
     List<Vacancy> findAllByStatus(String status);
+
+    List<Vacancy> findAllByCompanyName(String companyName);
 }

@@ -78,6 +78,17 @@ public class VacancyController {
         return ResponseEntity.ok().body(vacanciesByStatus);
     }
 
+    @GetMapping("vacancies/companies/{company}")
+    public ResponseEntity<List<Vacancy>> findByCompany(@PathVariable(value = "company") String company) {
+        if (StringUtils.isEmpty(company)) {
+            return ResponseEntity.ok().body(Collections.emptyList());
+        }
+
+        List<Vacancy> vacanciesByCompany = vacancyRepository.findAllByCompanyName(company);
+
+        return ResponseEntity.ok().body(vacanciesByCompany);
+    }
+
     @PutMapping("vacancies/{id}")
     public ResponseEntity<Vacancy> update(@PathVariable(value = "id") Long id, @RequestBody Vacancy vacancy) {
         Vacancy vacancyById = vacancyRepository.findById(id)
