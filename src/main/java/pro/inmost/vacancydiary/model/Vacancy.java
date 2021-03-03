@@ -1,5 +1,6 @@
 package pro.inmost.vacancydiary.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -45,6 +46,7 @@ public class Vacancy {
     @Column
     private String status;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy@HH:mm:ss")
     @Column
     private Timestamp lastStatusChange;
 
@@ -63,7 +65,7 @@ public class Vacancy {
         this.link = link;
         this.recruiterContacts = recruiterContacts;
         this.status = status;
-        this.lastStatusChange = new Timestamp(new Date().getTime());;
+        this.lastStatusChange = new Timestamp(new Date().getTime());
     }
 
     public Vacancy(String companyName, String position, int expectedSalary, String link,

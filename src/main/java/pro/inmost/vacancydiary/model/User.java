@@ -31,7 +31,6 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column
     @ManyToMany
     @JoinTable(
         name = "users_vacancies",

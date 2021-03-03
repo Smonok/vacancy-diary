@@ -20,7 +20,6 @@ public class DefaultDataLoader implements ApplicationRunner {
     private static final int USERS_NUMBER = 10;
     private static final int VACANCIES_NUMBER = 50;
     private final Random random = new Random();
-    private final List<Vacancy> createdVacancies = new ArrayList<>();
     private final UserController userController;
     private final VacancyController vacancyController;
     private final String[] companies = {"Inmost", "Google", "Amazon", "ECM Center"};
@@ -36,15 +35,14 @@ public class DefaultDataLoader implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         createVacancies();
-        registerUsers();
+        createUsers();
     }
 
     private void createVacancies() {
         for (int i = 0; i < VACANCIES_NUMBER; i++) {
             Vacancy vacancy = createRandomVacancy();
-
+            
             vacancyController.create(vacancy);
-            createdVacancies.add(vacancy);
         }
     }
 
@@ -70,15 +68,17 @@ public class DefaultDataLoader implements ApplicationRunner {
         return list.get(index);
     }
 
-    private void registerUsers() {
-        for (int i = 0; i < USERS_NUMBER; i++) {
-            User user = createRandomUser();
+    private void createUsers() {
+        List<Vacancy> createdVacancies = vacancyController.findAll();
 
-            userController.register(user);
+        for (int i = 0; i < USERS_NUMBER; i++) {
+            User user = createRandomUser(createdVacancies);
+
+            userController.create(user);
         }
     }
 
-    private User createRandomUser() {
+    private User createRandomUser(List<Vacancy> createdVacancies) {
         String email = emailCounter == 0 ? "nazariy_miami@ukr.net" :
             String.format("testmail%d@gmail.com", emailCounter);
         String password = generatePassword();

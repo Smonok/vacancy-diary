@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +36,7 @@ public class VacancyController {
         return vacancyRepository.findAll();
     }
 
-    @GetMapping("/vacancies/{id}")
+    @GetMapping("vacancies/{id}")
     public ResponseEntity<Vacancy> findById(@PathVariable(value = "id") Long id) {
         Vacancy vacancy = vacancyRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Cannot find vacancy with id = " + id));
@@ -48,6 +49,7 @@ public class VacancyController {
         if (vacancy == null || !Status.collectValues().contains(vacancy.getStatus())) {
             return ResponseEntity.badRequest().body(null);
         }
+        vacancyRepository.save(vacancy);
 
         return ResponseEntity.ok().body(vacancy);
     }
@@ -64,7 +66,7 @@ public class VacancyController {
         return ResponseEntity.ok().body(page);
     }
 
-    @GetMapping("/vacancies/statuses/{status}")
+    @GetMapping("vacancies/statuses/{status}")
     public ResponseEntity<List<Vacancy>> findByStatus(@PathVariable(value = "status") String status) {
         if (!Status.collectValues().contains(status)) {
             return ResponseEntity.ok().body(Collections.emptyList());
@@ -73,5 +75,17 @@ public class VacancyController {
         List<Vacancy> vacanciesByStatus = vacancyRepository.findAllByStatus(status);
 
         return ResponseEntity.ok().body(vacanciesByStatus);
+    }
+
+    @PutMapping("vacancies/{id}")
+    public ResponseEntity<Vacancy> update(@PathVariable(value = "id") Long id, @RequestBody Vacancy vacancy) {
+        Vacancy vacancyById = vacancyRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("USER_NOT_FOUND_MESSAGE" + id));
+
+        vacancyById.setCompanyName(vacancy.getCompanyName());
+        vacancyById.setExpectedSalary(vacancy.getExpectedSalary());
+        vacancyRepository.save(vacancyById);
+
+        return ResponseEntity.ok().body(vacancyById);
     }
 }

@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public enum Status {
-    GAVE_IN ("Подался"),
+    GAVE_IN("Подался"),
     GAVE_TEST("Дали тестовое"),
     WAITING_FOR_FEEDBACK("Жду фидбека"),
     SCREENING("Скрининг"),
@@ -17,9 +17,6 @@ public enum Status {
     private final String status;
 
     public String getStatus() {
-        if(status.equals("Подался")) {
-            return "Подался32147";
-        }
         return status;
     }
 
