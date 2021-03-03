@@ -1,5 +1,6 @@
 package pro.inmost.vacancydiary.controller;
 
+import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pro.inmost.vacancydiary.model.Status;
 import pro.inmost.vacancydiary.model.Vacancy;
 import pro.inmost.vacancydiary.repository.VacancyRepository;
 
@@ -42,12 +44,12 @@ public class VacancyController {
     }
 
     @PostMapping("vacancies")
-    public Vacancy create(@RequestBody Vacancy vacancy) {
-        if (vacancy == null) {
-            return new Vacancy();
+    public ResponseEntity<Vacancy> create(@RequestBody Vacancy vacancy) {
+        if (vacancy == null || !Status.collectValues().contains(vacancy.getStatus())) {
+            return ResponseEntity.badRequest().body(null);
         }
 
-        return vacancyRepository.save(vacancy);
+        return ResponseEntity.ok().body(vacancy);
     }
 
     @GetMapping("vacancies/users/{userId}")
@@ -60,5 +62,16 @@ public class VacancyController {
         Page<Vacancy> page = vacancyRepository.findByUser(userId, pageable);
 
         return ResponseEntity.ok().body(page);
+    }
+
+    @GetMapping("/vacancies/statuses/{status}")
+    public ResponseEntity<List<Vacancy>> findByStatus(@PathVariable(value = "status") String status) {
+        if (!Status.collectValues().contains(status)) {
+            return ResponseEntity.ok().body(Collections.emptyList());
+        }
+
+        List<Vacancy> vacanciesByStatus = vacancyRepository.findAllByStatus(status);
+
+        return ResponseEntity.ok().body(vacanciesByStatus);
     }
 }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
-import pro.inmost.vacancydiary.status.LoginStatus;
+import pro.inmost.vacancydiary.response.status.LoginStatus;
 
 public class LoginStatusSerializer extends JsonSerializer<LoginStatus> {
 

@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pro.inmost.vacancydiary.model.User;
 import pro.inmost.vacancydiary.repository.UserRepository;
-import pro.inmost.vacancydiary.status.LoginStatus;
-import pro.inmost.vacancydiary.status.RegisterStatus;
-import pro.inmost.vacancydiary.status.ResponseStatus;
+import pro.inmost.vacancydiary.response.status.LoginStatus;
+import pro.inmost.vacancydiary.response.status.RegisterStatus;
+import pro.inmost.vacancydiary.response.status.ResponseStatus;
 
 @RestController
 @RequestMapping("/diary")

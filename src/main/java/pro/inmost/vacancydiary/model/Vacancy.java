@@ -1,7 +1,8 @@
 package pro.inmost.vacancydiary.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,7 +46,7 @@ public class Vacancy {
     private String status;
 
     @Column
-    private Date lastStatusChange;
+    private Timestamp lastStatusChange;
 
     @ManyToMany(mappedBy = "vacancies")
     @JsonIgnore
@@ -55,7 +56,18 @@ public class Vacancy {
     }
 
     public Vacancy(String companyName, String position, int expectedSalary, String link,
-        String recruiterContacts, String status, Date lastStatusChange) {
+        String recruiterContacts, String status) {
+        this.companyName = companyName;
+        this.position = position;
+        this.expectedSalary = expectedSalary;
+        this.link = link;
+        this.recruiterContacts = recruiterContacts;
+        this.status = status;
+        this.lastStatusChange = new Timestamp(new Date().getTime());;
+    }
+
+    public Vacancy(String companyName, String position, int expectedSalary, String link,
+        String recruiterContacts, String status, Timestamp lastStatusChange) {
         this.companyName = companyName;
         this.position = position;
         this.expectedSalary = expectedSalary;

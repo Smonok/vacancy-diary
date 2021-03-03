@@ -1,25 +1,22 @@
 package pro.inmost.vacancydiary.loader;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import pro.inmost.vacancydiary.controller.UserController;
 import pro.inmost.vacancydiary.controller.VacancyController;
+import pro.inmost.vacancydiary.model.Status;
 import pro.inmost.vacancydiary.model.User;
 import pro.inmost.vacancydiary.model.Vacancy;
 
 @Component
 public class DefaultDataLoader implements ApplicationRunner {
-    private static final Logger logger = LoggerFactory.getLogger(DefaultDataLoader.class);
     private static final int USERS_NUMBER = 10;
     private static final int VACANCIES_NUMBER = 50;
     private final Random random = new Random();
@@ -28,8 +25,6 @@ public class DefaultDataLoader implements ApplicationRunner {
     private final VacancyController vacancyController;
     private final String[] companies = {"Inmost", "Google", "Amazon", "ECM Center"};
     private final String[] positions = {"Dev", "HR", "PM", "QA"};
-    private final String[] statuses = {"Подался", "Дали тестовое", "Жду фидбека", "Скрининг",
-        "Техническое собеседование", "Оффер", "Отказ", "Нет ответа"};
     private int emailCounter = 0;
 
     @Autowired
@@ -54,22 +49,25 @@ public class DefaultDataLoader implements ApplicationRunner {
     }
 
     private Vacancy createRandomVacancy() {
-        String companyName = getRandomElement(companies);
-        String position = getRandomElement(positions);
+        String companyName = findRandomElement(companies);
+        String position = findRandomElement(positions);
         int expectedSalary = getRandomNumber(400, 3000);
         String link = "www.google.com";
         String recruiterContacts = "+380683569098";
-        String status = getRandomElement(statuses);
-        long currentTime = new java.util.Date().getTime();
-        Date lastStatusChange = new Date(currentTime);
+        String status = findRandomElement(Status.collectValues());
 
         return new Vacancy(companyName, position, expectedSalary, link,
-            recruiterContacts, status, lastStatusChange);
+            recruiterContacts, status);
     }
 
-    private String getRandomElement(String[] array) {
+    private String findRandomElement(String[] array) {
         int index = random.nextInt(array.length);
         return array[index];
+    }
+
+    private String findRandomElement(List<String> list) {
+        int index = random.nextInt(list.size());
+        return list.get(index);
     }
 
     private void registerUsers() {

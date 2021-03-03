@@ -1,4 +1,4 @@
-package pro.inmost.vacancydiary.status;
+package pro.inmost.vacancydiary.response.status;
 
 public enum RegisterStatus implements ResponseStatus {
     SUCCESS,
