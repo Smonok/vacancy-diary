@@ -3,6 +3,7 @@ package pro.inmost.vacancydiary.controller;
 import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityNotFoundException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -82,10 +83,38 @@ public class VacancyController {
         Vacancy vacancyById = vacancyRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("USER_NOT_FOUND_MESSAGE" + id));
 
-        vacancyById.setCompanyName(vacancy.getCompanyName());
-        vacancyById.setExpectedSalary(vacancy.getExpectedSalary());
+        partialUpdate(vacancyById, vacancy);
         vacancyRepository.save(vacancyById);
 
         return ResponseEntity.ok().body(vacancyById);
+    }
+
+    private void partialUpdate(Vacancy destination, Vacancy source) {
+        if (destination != null && source != null) {
+            if (!source.getCompanyName().isEmpty()) {
+                destination.setCompanyName(source.getCompanyName());
+            }
+            if (!StringUtils.isEmpty(source.getStatus()) && Status.collectValues().contains(source.getStatus())) {
+                destination.setStatus(source.getStatus());
+            }
+            if (source.getExpectedSalary() != 0) {
+                destination.setExpectedSalary(source.getExpectedSalary());
+            }
+            if (!StringUtils.isEmpty(source.getLink())) {
+                destination.setLink(source.getLink());
+            }
+            if (!StringUtils.isEmpty(source.getPosition())) {
+                destination.setPosition(source.getPosition());
+            }
+            if (!StringUtils.isEmpty(source.getRecruiterContacts())) {
+                destination.setRecruiterContacts(source.getRecruiterContacts());
+            }
+            if (source.getLastStatusChange() != null) {
+                destination.setLastStatusChange(source.getLastStatusChange());
+            }
+            if (source.getUsers() != null && !source.getUsers().isEmpty()) {
+                destination.setUsers(source.getUsers());
+            }
+        }
     }
 }
