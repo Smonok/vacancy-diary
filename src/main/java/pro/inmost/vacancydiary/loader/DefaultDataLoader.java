@@ -1,9 +1,12 @@
 package pro.inmost.vacancydiary.loader;
 
+import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -41,7 +44,7 @@ public class DefaultDataLoader implements ApplicationRunner {
     private void createVacancies() {
         for (int i = 0; i < VACANCIES_NUMBER; i++) {
             Vacancy vacancy = createRandomVacancy();
-            
+
             vacancyController.create(vacancy);
         }
     }
@@ -72,20 +75,18 @@ public class DefaultDataLoader implements ApplicationRunner {
         List<Vacancy> createdVacancies = vacancyController.findAll();
 
         for (int i = 0; i < USERS_NUMBER; i++) {
-            User user = createRandomUser(createdVacancies);
+            User user = createRandomUser(Sets.newHashSet(createdVacancies));
 
             userController.create(user);
         }
     }
 
-    private User createRandomUser(List<Vacancy> createdVacancies) {
-        String email = emailCounter == 0 ? "nazariy_miami@ukr.net" :
-            String.format("testmail%d@gmail.com", emailCounter);
+    private User createRandomUser(HashSet<Vacancy> createdVacancies) {
+        String email = String.format("testmail%d@gmail.com", (++emailCounter));
         String password = generatePassword();
         int userVacanciesNumber = getRandomNumber(3, VACANCIES_NUMBER);
-        List<Vacancy> vacancies = pickRandomVacancies(createdVacancies, userVacanciesNumber);
+        Set<Vacancy> vacancies = pickRandomVacancies(createdVacancies, userVacanciesNumber);
 
-        emailCounter++;
         return new User(email, password, vacancies);
     }
 
@@ -105,14 +106,15 @@ public class DefaultDataLoader implements ApplicationRunner {
         return random.nextInt(max - min) + min;
     }
 
-    private List<Vacancy> pickRandomVacancies(List<Vacancy> vacancies, int number) {
+    private Set<Vacancy> pickRandomVacancies(Set<Vacancy> vacancies, int number) {
         if (vacancies == null || number < 1) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
 
         List<Vacancy> copy = new ArrayList<>(vacancies);
         Collections.shuffle(copy);
 
-        return number > copy.size() ? copy.subList(0, copy.size()) : copy.subList(0, number);
+        copy = number > copy.size() ? copy.subList(0, copy.size()) : copy.subList(0, number);
+        return Sets.newHashSet(copy);
     }
 }

@@ -14,19 +14,19 @@ public enum Status {
     REFUSAL("Отказ"),
     NO_ANSWER("Нет ответа");
 
-    private final String status;
+    private final String label;
 
-    public String getStatus() {
-        return status;
+    public String getLabel() {
+        return label;
     }
 
-    Status(String status) {
-        this.status = status;
+    Status(String label) {
+        this.label = label;
     }
 
     public static List<String> collectValues() {
         return Stream.of(Status.values())
-            .map(Status::getStatus)
+            .map(Status::getLabel)
             .collect(Collectors.toList());
     }
 }

@@ -1,9 +1,10 @@
 package pro.inmost.vacancydiary.model;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -11,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
@@ -25,19 +28,21 @@ public class User {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
+    @NotNull
+    @Email
     @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
     private String password;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "users_vacancies",
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "vacancies_id")
     )
-    private List<Vacancy> vacancies;
+    private Set<Vacancy> vacancies;
 
     @Override
     public boolean equals(Object o) {
@@ -64,7 +69,7 @@ public class User {
         this.password = password;
     }
 
-    public User(String email, String password, List<Vacancy> vacancies) {
+    public User(String email, String password, Set<Vacancy> vacancies) {
         this.email = email;
         this.password = password;
         this.vacancies = vacancies;

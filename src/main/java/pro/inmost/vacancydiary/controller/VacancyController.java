@@ -1,7 +1,10 @@
 package pro.inmost.vacancydiary.controller;
 
+import java.sql.Timestamp;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.EntityNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +53,9 @@ public class VacancyController {
         if (vacancy == null || !Status.collectValues().contains(vacancy.getStatus())) {
             return ResponseEntity.badRequest().body(null);
         }
+        Timestamp current = new Timestamp(new Date().getTime());
+        vacancy.setLastStatusChange(current);
+
         vacancyRepository.save(vacancy);
 
         return ResponseEntity.ok().body(vacancy);
@@ -62,29 +68,29 @@ public class VacancyController {
             return ResponseEntity.badRequest().body(Page.empty());
         }
 
-        Page<Vacancy> page = vacancyRepository.findByUser(userId, pageable);
+        Page<Vacancy> page = vacancyRepository.findAllByUserId(userId, pageable);
 
         return ResponseEntity.ok().body(page);
     }
 
     @GetMapping("vacancies/statuses/{status}")
-    public ResponseEntity<List<Vacancy>> findByStatus(@PathVariable(value = "status") String status) {
+    public ResponseEntity<Set<Vacancy>> findByStatus(@PathVariable(value = "status") String status) {
         if (!Status.collectValues().contains(status)) {
-            return ResponseEntity.ok().body(Collections.emptyList());
+            return ResponseEntity.ok().body(Collections.emptySet());
         }
 
-        List<Vacancy> vacanciesByStatus = vacancyRepository.findAllByStatus(status);
+        Set<Vacancy> vacanciesByStatus = vacancyRepository.findAllByStatus(status);
 
         return ResponseEntity.ok().body(vacanciesByStatus);
     }
 
     @GetMapping("vacancies/companies/{company}")
-    public ResponseEntity<List<Vacancy>> findByCompany(@PathVariable(value = "company") String company) {
+    public ResponseEntity<Set<Vacancy>> findByCompany(@PathVariable(value = "company") String company) {
         if (StringUtils.isEmpty(company)) {
-            return ResponseEntity.ok().body(Collections.emptyList());
+            return ResponseEntity.ok().body(Collections.emptySet());
         }
 
-        List<Vacancy> vacanciesByCompany = vacancyRepository.findAllByCompanyName(company);
+        Set<Vacancy> vacanciesByCompany = vacancyRepository.findAllByCompanyName(company);
 
         return ResponseEntity.ok().body(vacanciesByCompany);
     }
@@ -106,7 +112,11 @@ public class VacancyController {
                 destination.setCompanyName(source.getCompanyName());
             }
             if (!StringUtils.isEmpty(source.getStatus()) && Status.collectValues().contains(source.getStatus())) {
+                Date date = new Date();
+                Timestamp current = new Timestamp(date.getTime());
+
                 destination.setStatus(source.getStatus());
+                destination.setLastStatusChange(current);
             }
             if (source.getExpectedSalary() != 0) {
                 destination.setExpectedSalary(source.getExpectedSalary());
@@ -120,12 +130,11 @@ public class VacancyController {
             if (!StringUtils.isEmpty(source.getRecruiterContacts())) {
                 destination.setRecruiterContacts(source.getRecruiterContacts());
             }
-            if (source.getLastStatusChange() != null) {
-                destination.setLastStatusChange(source.getLastStatusChange());
-            }
             if (source.getUsers() != null && !source.getUsers().isEmpty()) {
                 destination.setUsers(source.getUsers());
             }
         }
     }
+
+
 }

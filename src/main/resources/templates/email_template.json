@@ -1,0 +1,4 @@
+{
+    "from": "vacancy@mail.com",
+    "message": "Email message for 'Waiting for feedback' status of vacancy with id = %d"
+}

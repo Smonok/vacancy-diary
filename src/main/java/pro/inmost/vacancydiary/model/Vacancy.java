@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -50,9 +51,9 @@ public class Vacancy {
     @Column
     private Timestamp lastStatusChange;
 
-    @ManyToMany(mappedBy = "vacancies")
+    @ManyToMany(mappedBy = "vacancies", fetch = FetchType.EAGER)
     @JsonIgnore
-    private List<User> users;
+    private Set<User> users;
 
     public Vacancy() {
     }
@@ -66,16 +67,5 @@ public class Vacancy {
         this.recruiterContacts = recruiterContacts;
         this.status = status;
         this.lastStatusChange = new Timestamp(new Date().getTime());
-    }
-
-    public Vacancy(String companyName, String position, int expectedSalary, String link,
-        String recruiterContacts, String status, Timestamp lastStatusChange) {
-        this.companyName = companyName;
-        this.position = position;
-        this.expectedSalary = expectedSalary;
-        this.link = link;
-        this.recruiterContacts = recruiterContacts;
-        this.status = status;
-        this.lastStatusChange = lastStatusChange;
     }
 }
