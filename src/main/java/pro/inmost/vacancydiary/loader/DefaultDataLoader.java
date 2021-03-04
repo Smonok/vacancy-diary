@@ -27,6 +27,7 @@ public class DefaultDataLoader implements ApplicationRunner {
     private final VacancyController vacancyController;
     private final String[] companies = {"Inmost", "Google", "Amazon", "ECM Center"};
     private final String[] positions = {"Dev", "HR", "PM", "QA"};
+    private final String[] names = {"Nazarii", "Pavel", "Alex", "Bob", "Josh"};
     private int emailCounter = 0;
 
     @Autowired
@@ -82,12 +83,13 @@ public class DefaultDataLoader implements ApplicationRunner {
     }
 
     private User createRandomUser(HashSet<Vacancy> createdVacancies) {
+        String name = findRandomElement(names);
         String email = String.format("testmail%d@gmail.com", (++emailCounter));
         String password = generatePassword();
         int userVacanciesNumber = getRandomNumber(3, VACANCIES_NUMBER);
         Set<Vacancy> vacancies = pickRandomVacancies(createdVacancies, userVacanciesNumber);
 
-        return new User(email, password, vacancies);
+        return new User(name, email, password, vacancies);
     }
 
     private String generatePassword() {

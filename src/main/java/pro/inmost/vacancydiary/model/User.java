@@ -13,7 +13,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
@@ -28,7 +27,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
-    @NotNull
+    @Column(nullable = false)
+    private String name;
+
     @Email
     @Column(nullable = false)
     private String email;
@@ -64,12 +65,14 @@ public class User {
     public User() {
     }
 
-    public User(String email, String password) {
+    public User(String name, String email, String password) {
+        this.name = name;
         this.email = email;
         this.password = password;
     }
 
-    public User(String email, String password, Set<Vacancy> vacancies) {
+    public User(String name, String email, String password, Set<Vacancy> vacancies) {
+        this.name = name;
         this.email = email;
         this.password = password;
         this.vacancies = vacancies;

@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.EntityNotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,28 +21,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pro.inmost.vacancydiary.model.Status;
 import pro.inmost.vacancydiary.model.Vacancy;
-import pro.inmost.vacancydiary.repository.VacancyRepository;
+import pro.inmost.vacancydiary.service.VacancyService;
+import pro.inmost.vacancydiary.util.VacancyUtil;
 
 @RestController
 @RequestMapping("/diary")
 public class VacancyController {
     private static final int PAGE_SIZE = 5;
-    private final VacancyRepository vacancyRepository;
+    private final VacancyService vacancyService;
 
     @Autowired
-    public VacancyController(VacancyRepository vacancyRepository) {
-        this.vacancyRepository = vacancyRepository;
+    public VacancyController(VacancyService vacancyService) {
+        this.vacancyService = vacancyService;
     }
 
     @GetMapping("vacancies")
     public List<Vacancy> findAll() {
-        return vacancyRepository.findAll();
+        return vacancyService.findAll();
     }
 
     @GetMapping("vacancies/{id}")
     public ResponseEntity<Vacancy> findById(@PathVariable(value = "id") Long id) {
-        Vacancy vacancy = vacancyRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Cannot find vacancy with id = " + id));
+        Vacancy vacancy = vacancyService.findById(id);
 
         return ResponseEntity.ok().body(vacancy);
     }
@@ -56,7 +55,7 @@ public class VacancyController {
         Timestamp current = new Timestamp(new Date().getTime());
         vacancy.setLastStatusChange(current);
 
-        vacancyRepository.save(vacancy);
+        vacancyService.create(vacancy);
 
         return ResponseEntity.ok().body(vacancy);
     }
@@ -64,11 +63,11 @@ public class VacancyController {
     @GetMapping("vacancies/users/{userId}")
     public ResponseEntity<Page<Vacancy>> findByUserId(@PathVariable(value = "userId") Long userId,
         @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC, value = PAGE_SIZE) Pageable pageable) {
-        if (userId < 1) {
+        if (userId < 0) {
             return ResponseEntity.badRequest().body(Page.empty());
         }
 
-        Page<Vacancy> page = vacancyRepository.findAllByUserId(userId, pageable);
+        Page<Vacancy> page = vacancyService.findAllByUserId(userId, pageable);
 
         return ResponseEntity.ok().body(page);
     }
@@ -79,7 +78,7 @@ public class VacancyController {
             return ResponseEntity.ok().body(Collections.emptySet());
         }
 
-        Set<Vacancy> vacanciesByStatus = vacancyRepository.findAllByStatus(status);
+        Set<Vacancy> vacanciesByStatus = vacancyService.findAllByStatus(status);
 
         return ResponseEntity.ok().body(vacanciesByStatus);
     }
@@ -90,51 +89,18 @@ public class VacancyController {
             return ResponseEntity.ok().body(Collections.emptySet());
         }
 
-        Set<Vacancy> vacanciesByCompany = vacancyRepository.findAllByCompanyName(company);
+        Set<Vacancy> vacanciesByCompany = vacancyService.findAllByCompanyName(company);
 
         return ResponseEntity.ok().body(vacanciesByCompany);
     }
 
     @PutMapping("vacancies/{id}")
     public ResponseEntity<Vacancy> update(@PathVariable(value = "id") Long id, @RequestBody Vacancy vacancy) {
-        Vacancy vacancyById = vacancyRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("USER_NOT_FOUND_MESSAGE" + id));
+        Vacancy vacancyById = vacancyService.findById(id);
 
-        partialUpdate(vacancyById, vacancy);
-        vacancyRepository.save(vacancyById);
+        VacancyUtil.partialUpdate(vacancyById, vacancy);
+        vacancyService.create(vacancyById);
 
         return ResponseEntity.ok().body(vacancyById);
     }
-
-    private void partialUpdate(Vacancy destination, Vacancy source) {
-        if (destination != null && source != null) {
-            if (!source.getCompanyName().isEmpty()) {
-                destination.setCompanyName(source.getCompanyName());
-            }
-            if (!StringUtils.isEmpty(source.getStatus()) && Status.collectValues().contains(source.getStatus())) {
-                Date date = new Date();
-                Timestamp current = new Timestamp(date.getTime());
-
-                destination.setStatus(source.getStatus());
-                destination.setLastStatusChange(current);
-            }
-            if (source.getExpectedSalary() != 0) {
-                destination.setExpectedSalary(source.getExpectedSalary());
-            }
-            if (!StringUtils.isEmpty(source.getLink())) {
-                destination.setLink(source.getLink());
-            }
-            if (!StringUtils.isEmpty(source.getPosition())) {
-                destination.setPosition(source.getPosition());
-            }
-            if (!StringUtils.isEmpty(source.getRecruiterContacts())) {
-                destination.setRecruiterContacts(source.getRecruiterContacts());
-            }
-            if (source.getUsers() != null && !source.getUsers().isEmpty()) {
-                destination.setUsers(source.getUsers());
-            }
-        }
-    }
-
-
 }
