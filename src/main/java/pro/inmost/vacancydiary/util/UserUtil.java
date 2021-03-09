@@ -7,13 +7,13 @@ public class UserUtil {
 
     public static void partialUpdate(User destination, User source) {
         if (destination != null && source != null) {
-            if (!StringUtils.isEmpty(source.getName())) {
+            if (!StringUtils.isBlank(source.getName())) {
                 destination.setName(source.getName());
             }
-            if (!StringUtils.isEmpty(source.getEmail())) {
+            if (!StringUtils.isBlank(source.getEmail())) {
                 destination.setEmail(source.getEmail());
             }
-            if (!StringUtils.isEmpty(source.getPassword())) {
+            if (!StringUtils.isBlank(source.getPassword())) {
                 destination.setPassword(source.getPassword());
             }
             if (source.getVacancies() != null && !source.getVacancies().isEmpty()) {

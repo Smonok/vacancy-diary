@@ -50,9 +50,14 @@ public class AuthorizationController {
     @PostMapping("users/login")
     public Map<String, ResponseStatus> login(@RequestBody User user) {
         List<User> users = userRepository.findAll();
+        String currentUserEmail = user.getEmail();
+        String currentUserPassword = user.getPassword();
 
         for (User other : users) {
-            if (other.equals(user)) {
+            String email = other.getEmail();
+            String password = other.getPassword();
+
+            if (email.equals(currentUserEmail) && password.equals(currentUserPassword)) {
                 return createResponse(LoginStatus.SUCCESS);
             }
         }

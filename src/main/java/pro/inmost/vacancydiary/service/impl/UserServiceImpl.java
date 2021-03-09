@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByName(String name) {
-        if(StringUtils.isEmpty(name)) {
+        if (StringUtils.isBlank(name)) {
             return new User();
         }
 
@@ -69,14 +69,14 @@ public class UserServiceImpl implements UserService {
     }
 
     private boolean isEmptyUser(User user) {
-        if(user == null) {
+        if (user == null) {
             return true;
         }
 
         String userName = user.getName();
-        String userPassword = user.getPassword() ;
-        String userEmail = user.getEmail() ;
+        String userPassword = user.getPassword();
+        String userEmail = user.getEmail();
 
-        return StringUtils.isEmpty(userName) && StringUtils.isEmpty(userPassword) && StringUtils.isEmpty(userEmail);
+        return StringUtils.isBlank(userName) && StringUtils.isBlank(userPassword) && StringUtils.isBlank(userEmail);
     }
 }

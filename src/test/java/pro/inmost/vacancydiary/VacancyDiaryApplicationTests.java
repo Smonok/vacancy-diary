@@ -9,5 +9,4 @@ class VacancyDiaryApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }

@@ -1,6 +1,5 @@
 package pro.inmost.vacancydiary.model;
 
-import java.util.Objects;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +12,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
@@ -22,6 +22,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate
 @Getter
 @Setter
+@EqualsAndHashCode
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -44,23 +45,6 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "vacancies_id")
     )
     private Set<Vacancy> vacancies;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        User user = (User) o;
-        return email.equals(user.email) && password.equals(user.password);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, email, password);
-    }
 
     public User() {
     }

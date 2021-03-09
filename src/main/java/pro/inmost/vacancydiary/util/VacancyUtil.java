@@ -13,7 +13,7 @@ public class VacancyUtil {
             if (!source.getCompanyName().isEmpty()) {
                 destination.setCompanyName(source.getCompanyName());
             }
-            if (!StringUtils.isEmpty(source.getStatus()) && Status.collectValues().contains(source.getStatus())) {
+            if (!StringUtils.isBlank(source.getStatus()) && Status.collectValues().contains(source.getStatus())) {
                 Date date = new Date();
                 Timestamp current = new Timestamp(date.getTime());
 
@@ -23,13 +23,13 @@ public class VacancyUtil {
             if (source.getExpectedSalary() != 0) {
                 destination.setExpectedSalary(source.getExpectedSalary());
             }
-            if (!StringUtils.isEmpty(source.getLink())) {
+            if (!StringUtils.isBlank(source.getLink())) {
                 destination.setLink(source.getLink());
             }
-            if (!StringUtils.isEmpty(source.getPosition())) {
+            if (!StringUtils.isBlank(source.getPosition())) {
                 destination.setPosition(source.getPosition());
             }
-            if (!StringUtils.isEmpty(source.getRecruiterContacts())) {
+            if (!StringUtils.isBlank(source.getRecruiterContacts())) {
                 destination.setRecruiterContacts(source.getRecruiterContacts());
             }
             if (source.getUsers() != null && !source.getUsers().isEmpty()) {
