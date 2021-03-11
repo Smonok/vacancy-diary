@@ -18,7 +18,6 @@ import pro.inmost.vacancydiary.response.status.ResponseStatus;
 @RestController
 @RequestMapping("/diary")
 public class AuthorizationController {
-    private static final String USER_NOT_FOUND_MESSAGE = "Cannot find user with id = ";
     private final UserRepository userRepository;
 
     @Autowired
