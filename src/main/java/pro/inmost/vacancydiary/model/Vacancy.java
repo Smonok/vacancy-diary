@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
@@ -24,6 +25,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Entity
 @Table
 @DynamicUpdate
+@ToString
 public class Vacancy {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -51,6 +53,8 @@ public class Vacancy {
     @Column
     private Timestamp lastStatusChange;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @ManyToMany(mappedBy = "vacancies", fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<User> users;

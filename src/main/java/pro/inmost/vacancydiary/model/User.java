@@ -15,6 +15,7 @@ import javax.validation.constraints.Email;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
@@ -23,6 +24,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Getter
 @Setter
 @EqualsAndHashCode
+@ToString
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
