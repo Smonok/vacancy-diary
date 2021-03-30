@@ -16,4 +16,6 @@ public interface UserService {
     User findByName(String name);
 
     User register(User user);
+
+    User findByEmail(String email);
 }

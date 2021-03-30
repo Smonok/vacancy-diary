@@ -74,12 +74,22 @@ public class DefaultDataLoader implements ApplicationRunner {
 
     private void createUsers() {
         List<Vacancy> createdVacancies = vacancyController.findAll();
-
+        createDefaultUser();
+        
         for (int i = 0; i < USERS_NUMBER; i++) {
             User user = createRandomUser(Sets.newHashSet(createdVacancies));
 
             userController.create(user);
         }
+    }
+
+    private void createDefaultUser() {
+        String name = "name";
+        String email = "mail@gmail.com";
+        String password = "111";
+        Set<Vacancy> vacancies = Collections.emptySet();
+
+        userController.create(new User(name, email, password, vacancies));
     }
 
     private User createRandomUser(HashSet<Vacancy> createdVacancies) {

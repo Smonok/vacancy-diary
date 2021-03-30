@@ -79,4 +79,13 @@ public class UserServiceImpl implements UserService {
 
         return StringUtils.isBlank(userName) && StringUtils.isBlank(userPassword) && StringUtils.isBlank(userEmail);
     }
+
+    @Override
+    public User findByEmail(String email) {
+        if (StringUtils.isBlank(email)) {
+            throw new IllegalArgumentException("Blank email");
+        }
+
+        return userRepository.findByEmail(email);
+    }
 }

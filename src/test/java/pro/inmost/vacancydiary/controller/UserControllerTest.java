@@ -21,6 +21,8 @@ import org.mockito.ArgumentMatchers;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -31,6 +33,8 @@ import pro.inmost.vacancydiary.service.UserService;
 
 @Slf4j
 @WebMvcTest(UserController.class)
+@WebAppConfiguration
+@ContextConfiguration
 public class UserControllerTest {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final CollectionType usersList = objectMapper.getTypeFactory()

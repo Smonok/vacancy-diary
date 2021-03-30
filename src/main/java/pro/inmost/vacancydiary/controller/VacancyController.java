@@ -1,7 +1,6 @@
 package pro.inmost.vacancydiary.controller;
 
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -50,7 +49,7 @@ public class VacancyController {
     @PostMapping("vacancies")
     public ResponseEntity<Vacancy> create(@RequestBody Vacancy vacancy) {
         if (vacancy == null || !Status.collectValues().contains(vacancy.getStatus())) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.notFound().build();
         }
         Timestamp current = new Timestamp(new Date().getTime());
         vacancy.setLastStatusChange(current);
@@ -64,7 +63,7 @@ public class VacancyController {
     public ResponseEntity<Page<Vacancy>> findByUserId(@PathVariable(value = "userId") Long userId,
         @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC, value = PAGE_SIZE) Pageable pageable) {
         if (userId < 0) {
-            return ResponseEntity.badRequest().body(Page.empty());
+            return ResponseEntity.notFound().build();
         }
 
         Page<Vacancy> page = vacancyService.findAllByUserId(userId, pageable);
@@ -75,7 +74,7 @@ public class VacancyController {
     @GetMapping("vacancies/statuses/{status}")
     public ResponseEntity<Set<Vacancy>> findByStatus(@PathVariable(value = "status") String status) {
         if (!Status.collectValues().contains(status)) {
-            return ResponseEntity.ok().body(Collections.emptySet());
+            return ResponseEntity.notFound().build();
         }
 
         Set<Vacancy> vacanciesByStatus = vacancyService.findAllByStatus(status);
@@ -86,7 +85,7 @@ public class VacancyController {
     @GetMapping("vacancies/companies/{company}")
     public ResponseEntity<Set<Vacancy>> findByCompany(@PathVariable(value = "company") String company) {
         if (StringUtils.isEmpty(company)) {
-            return ResponseEntity.ok().body(Collections.emptySet());
+            return ResponseEntity.notFound().build();
         }
 
         Set<Vacancy> vacanciesByCompany = vacancyService.findAllByCompanyName(company);

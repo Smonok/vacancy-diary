@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,6 +46,10 @@ public class UserController {
         if (user == null) {
             return new ResponseEntity<>(new User(), HttpStatus.BAD_REQUEST);
         }
+
+        String password = user.getPassword();
+        String encodedPassword = new BCryptPasswordEncoder().encode(password);
+        user.setPassword(encodedPassword);
 
         User created = userService.create(user);
         return ResponseEntity.ok().body(created);
