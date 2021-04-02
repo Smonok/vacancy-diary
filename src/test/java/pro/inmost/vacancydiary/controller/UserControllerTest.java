@@ -1,6 +1,9 @@
 package pro.inmost.vacancydiary.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -13,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +32,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import pro.inmost.vacancydiary.mapper.UserMapper;
 import pro.inmost.vacancydiary.model.User;
+import pro.inmost.vacancydiary.model.dto.UserDto;
 import pro.inmost.vacancydiary.service.UserService;
 
 @Slf4j
@@ -41,22 +47,26 @@ public class UserControllerTest {
         .constructCollectionType(List.class, User.class);
     @MockBean
     private UserService userService;
+    @MockBean
+    private UserMapper userMapper;
     private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new UserController(userService)).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(new UserController(userService, userMapper)).build();
     }
 
     @Test
     void findAllShouldReturnAllUsers() throws Exception {
         List<User> anyUsers = Arrays.asList(new User(), new User());
+        List<UserDto> anyUsersDto = Arrays.asList(new UserDto(), new UserDto());
         when(userService.findAll()).thenReturn(anyUsers);
+        when(userMapper.map(anyUsers)).thenReturn(anyUsersDto);
 
         RequestBuilder request = get("/diary/users").contentType(MediaType.APPLICATION_JSON);
 
         String response = getResponseContent(request, status().isOk());
-        List<User> users = objectMapper.readValue(response, usersList);
+        List<UserDto> users = objectMapper.readValue(response, usersList);
 
         int expectedUsersNumber = 2;
         int actualUsersNumber = users.size();
@@ -67,14 +77,15 @@ public class UserControllerTest {
     @Test
     void findByIdShouldReturnUserWithProvidedIdWhenUserExists() throws JsonProcessingException {
         long id = 1;
-        User user = new User();
-        user.setId(id);
-        when(userService.findById(ArgumentMatchers.anyLong())).thenReturn(user);
+        User user = new User(id, null, null, null, null);
+        UserDto userDto = new UserDto(id, null, null, null, null);
+        when(userService.findById(anyLong())).thenReturn(user);
+        when(userMapper.map(user)).thenReturn(userDto);
 
         RequestBuilder request = get("/diary/users/{id}", id).contentType(MediaType.APPLICATION_JSON);
 
         String response = getResponseContent(request, status().isOk());
-        User userById = objectMapper.readValue(response, User.class);
+        UserDto userById = objectMapper.readValue(response, UserDto.class);
 
         assertEquals(id, userById.getId());
     }
@@ -96,7 +107,10 @@ public class UserControllerTest {
     void createShouldReturnCreatedUserWhenUserNotNull() throws JsonProcessingException {
         String expectedEmail = "mail1@ukr.net";
         User user = new User("Name", expectedEmail, "password");
+        UserDto userDto = new UserDto(1L, "Name", expectedEmail, "password", Collections.emptySet());
         when(userService.create(ArgumentMatchers.any(User.class))).thenReturn(user);
+        when(userMapper.map(any(User.class))).thenReturn(userDto);
+        when(userMapper.map(any(UserDto.class))).thenReturn(user);
 
         String requestJson = convertToJson(user);
 
@@ -104,7 +118,7 @@ public class UserControllerTest {
             .contentType(MediaType.APPLICATION_JSON).content(requestJson);
 
         String response = getResponseContent(request, status().isOk());
-        User created = objectMapper.readValue(response, User.class);
+        UserDto created = objectMapper.readValue(response, UserDto.class);
         String actualEmail = created.getEmail();
 
         assertEquals(expectedEmail, actualEmail);
@@ -115,11 +129,14 @@ public class UserControllerTest {
         String initialEmail = "mail@gmail.com";
         String expectedEmail = "mail22@ukr.net";
         String password = "password";
-        User userBeforeUpdate = new User("Name", initialEmail, password);
-        User userAfterUpdate = new User(null, expectedEmail, null);
+        String name = "Name";
+        User userBeforeUpdate = new User(name, initialEmail, password);
+        User userAfterUpdate = new User(name, expectedEmail, password);
+        UserDto userAfterUpdateDto = new UserDto(1L, name, expectedEmail, password, Collections.emptySet());
 
-        when(userService.findById(ArgumentMatchers.anyLong())).thenReturn(userBeforeUpdate);
-        when(userService.create(ArgumentMatchers.any(User.class))).thenReturn(userAfterUpdate);
+        when(userService.findById(anyLong())).thenReturn(userBeforeUpdate);
+        when(userService.create(any(User.class))).thenReturn(userAfterUpdate);
+        when(userMapper.map(any(User.class))).thenReturn(userAfterUpdateDto);
 
         String requestJson = convertToJson(userAfterUpdate);
 
@@ -127,10 +144,11 @@ public class UserControllerTest {
             .contentType(MediaType.APPLICATION_JSON).content(requestJson);
 
         String response = getResponseContent(request, status().isOk());
-        User updated = objectMapper.readValue(response, User.class);
+        UserDto updated = objectMapper.readValue(response, UserDto.class);
 
         assertEquals(expectedEmail, updated.getEmail());
         assertEquals(password, updated.getPassword());
+        assertNotNull(updated.getName());
     }
 
     @Test

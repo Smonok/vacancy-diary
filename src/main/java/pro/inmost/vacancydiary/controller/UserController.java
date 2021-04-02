@@ -3,66 +3,74 @@ package pro.inmost.vacancydiary.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pro.inmost.vacancydiary.mapper.UserMapper;
 import pro.inmost.vacancydiary.model.User;
+import pro.inmost.vacancydiary.model.dto.UserDto;
 import pro.inmost.vacancydiary.service.UserService;
-import pro.inmost.vacancydiary.util.UserUtil;
 
+@Slf4j
 @RestController
 @RequestMapping("/diary")
 public class UserController {
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @GetMapping("users")
-    public List<User> findAll() {
-        return userService.findAll();
+    public List<UserDto> findAll() {
+        List<User> users = userService.findAll();
+        return userMapper.map(users);
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> findById(@PathVariable(value = "id") Long id) {
-        User response = userService.findById(id);
+    public ResponseEntity<UserDto> findById(@PathVariable(value = "id") Long id) {
+        User userById = userService.findById(id);
+        UserDto response = userMapper.map(userById);
+        log.info("Founded user: {} by id = {}", userById, id);
 
         return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("users")
-    public ResponseEntity<User> create(@RequestBody User user) {
-        if (user == null) {
-            return new ResponseEntity<>(new User(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<UserDto> create(@RequestBody UserDto userDto) {
+        if (userDto == null) {
+            return new ResponseEntity<>(new UserDto(), HttpStatus.BAD_REQUEST);
         }
 
-        String password = user.getPassword();
+        String password = userDto.getPassword();
         String encodedPassword = new BCryptPasswordEncoder().encode(password);
-        user.setPassword(encodedPassword);
+        userDto.setPassword(encodedPassword);
 
+        User user = userMapper.map(userDto);
         User created = userService.create(user);
-        return ResponseEntity.ok().body(created);
+        UserDto createdDto = userMapper.map(created);
+
+        log.info("Created user: {}", created);
+        return ResponseEntity.ok().body(createdDto);
     }
 
     @PutMapping("users/{id}")
-    public ResponseEntity<User> update(@PathVariable(value = "id") Long id, @RequestBody User user) {
+    public ResponseEntity<UserDto> update(@PathVariable(value = "id") Long id, @RequestBody UserDto userDto) {
         User userById = userService.findById(id);
 
-        UserUtil.partialUpdate(userById, user);
+        log.info("User to update: {}", userById);
+        userMapper.update(userDto, userById);
+        log.info("Updated user: {}", userById);
         userService.create(userById);
 
-        return ResponseEntity.ok().body(userById);
+        UserDto userByIdDto = userMapper.map(userById);
+        return ResponseEntity.ok().body(userByIdDto);
     }
 
     @DeleteMapping("users/{id}")

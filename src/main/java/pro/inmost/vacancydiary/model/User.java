@@ -12,8 +12,10 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
@@ -25,6 +27,8 @@ import org.hibernate.annotations.DynamicUpdate;
 @Setter
 @EqualsAndHashCode
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -47,9 +51,6 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "vacancies_id")
     )
     private Set<Vacancy> vacancies;
-
-    public User() {
-    }
 
     public User(String name, String email, String password) {
         this.name = name;

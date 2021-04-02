@@ -12,28 +12,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-import pro.inmost.vacancydiary.controller.UserController;
-import pro.inmost.vacancydiary.controller.VacancyController;
 import pro.inmost.vacancydiary.model.Status;
 import pro.inmost.vacancydiary.model.User;
 import pro.inmost.vacancydiary.model.Vacancy;
+import pro.inmost.vacancydiary.service.UserService;
+import pro.inmost.vacancydiary.service.VacancyService;
 
 @Component
 public class DefaultDataLoader implements ApplicationRunner {
     private static final int USERS_NUMBER = 10;
     private static final int VACANCIES_NUMBER = 50;
     private final Random random = new Random();
-    private final UserController userController;
-    private final VacancyController vacancyController;
+    private final UserService userService;
+    private final VacancyService vacancyService;
     private final String[] companies = {"Inmost", "Google", "Amazon", "ECM Center"};
     private final String[] positions = {"Dev", "HR", "PM", "QA"};
     private final String[] names = {"Nazarii", "Pavel", "Alex", "Bob", "Josh"};
     private int emailCounter = 0;
 
     @Autowired
-    public DefaultDataLoader(UserController userController, VacancyController vacancyController) {
-        this.userController = userController;
-        this.vacancyController = vacancyController;
+    public DefaultDataLoader(UserService userService, VacancyService vacancyService) {
+        this.userService = userService;
+        this.vacancyService = vacancyService;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class DefaultDataLoader implements ApplicationRunner {
         for (int i = 0; i < VACANCIES_NUMBER; i++) {
             Vacancy vacancy = createRandomVacancy();
 
-            vacancyController.create(vacancy);
+            vacancyService.create(vacancy);
         }
     }
 
@@ -73,13 +73,13 @@ public class DefaultDataLoader implements ApplicationRunner {
     }
 
     private void createUsers() {
-        List<Vacancy> createdVacancies = vacancyController.findAll();
+        List<Vacancy> createdVacancies = vacancyService.findAll();
         createDefaultUser();
-        
+
         for (int i = 0; i < USERS_NUMBER; i++) {
             User user = createRandomUser(Sets.newHashSet(createdVacancies));
 
-            userController.create(user);
+            userService.create(user);
         }
     }
 
@@ -89,7 +89,7 @@ public class DefaultDataLoader implements ApplicationRunner {
         String password = "111";
         Set<Vacancy> vacancies = Collections.emptySet();
 
-        userController.create(new User(name, email, password, vacancies));
+        userService.create(new User(name, email, password, vacancies));
     }
 
     private User createRandomUser(HashSet<Vacancy> createdVacancies) {
