@@ -21,7 +21,7 @@ public class VacancyDto {
 
     private String position;
 
-    private int expectedSalary;
+    private Integer expectedSalary;
 
     private String link;
 
