@@ -77,7 +77,7 @@ public class VacancyController {
         }
 
         Page<Vacancy> page = vacancyService.findAllByUserId(userId, pageable);
-        Page<VacancyDto> pageDto = vacancyMapper.map(page);
+        Page<VacancyDto> pageDto = page.map(vacancyMapper::map);
 
         return ResponseEntity.ok().body(pageDto);
     }

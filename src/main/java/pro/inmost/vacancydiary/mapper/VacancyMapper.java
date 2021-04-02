@@ -8,7 +8,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import pro.inmost.vacancydiary.model.Vacancy;
 import pro.inmost.vacancydiary.model.dto.VacancyDto;
@@ -18,15 +17,15 @@ import pro.inmost.vacancydiary.model.dto.VacancyDto;
 public interface VacancyMapper {
     VacancyDto map(Vacancy vacancy);
 
+    @Mapping(target = "users", ignore = true)
     Vacancy map(VacancyDto vacancy);
 
     List<VacancyDto> map(List<Vacancy> vacancies);
 
     Set<VacancyDto> map(Set<Vacancy> vacancies);
 
-    Page<VacancyDto> map(Page<Vacancy> vacancies);
-
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "users", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void update(VacancyDto vacancyDto, @MappingTarget Vacancy vacancy);
 }
