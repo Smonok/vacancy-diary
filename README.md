@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# vacancy-diary
-=======
 ## Installation and start-up instructions
 1) Clone this repository<br>
 2) Open it with your IDE<br>
