@@ -1,7 +1,5 @@
 package pro.inmost.vacancydiary.controller;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +22,7 @@ import pro.inmost.vacancydiary.model.Status;
 import pro.inmost.vacancydiary.model.Vacancy;
 import pro.inmost.vacancydiary.model.dto.VacancyDto;
 import pro.inmost.vacancydiary.service.VacancyService;
+import pro.inmost.vacancydiary.util.DateUtil;
 
 @Slf4j
 @RestController
@@ -56,11 +55,8 @@ public class VacancyController {
 
     @PostMapping("vacancies")
     public ResponseEntity<VacancyDto> create(@RequestBody VacancyDto vacancyDto) {
-        if (vacancyDto == null || !Status.collectValues().contains(vacancyDto.getStatus())) {
-            return ResponseEntity.notFound().build();
-        }
-        Timestamp current = new Timestamp(new Date().getTime());
-        vacancyDto.setLastStatusChange(current);
+        throwExceptionIfStatusNotExists(vacancyDto.getStatus());
+        vacancyDto.setLastStatusChange(DateUtil.getCurrentDate());
 
         Vacancy vacancy = vacancyMapper.map(vacancyDto);
         Vacancy created = vacancyService.create(vacancy);
@@ -109,13 +105,27 @@ public class VacancyController {
     @PutMapping("vacancies/{id}")
     public ResponseEntity<VacancyDto> update(@PathVariable(value = "id") Long id, @RequestBody VacancyDto vacancyDto) {
         Vacancy vacancyById = vacancyService.findById(id);
+        String providedStatus = vacancyDto.getStatus();
+
+        throwExceptionIfStatusNotExists(providedStatus);
 
         log.info("Vacancy to update: {}", vacancyById);
         vacancyMapper.update(vacancyDto, vacancyById);
+
+        if (providedStatus != null) {
+            vacancyById.setLastStatusChange(DateUtil.getCurrentDate());
+        }
+
         log.info("Updated vacancy: {}", vacancyById);
         vacancyService.create(vacancyById);
 
         VacancyDto vacancyByIdDto = vacancyMapper.map(vacancyById);
         return ResponseEntity.ok().body(vacancyByIdDto);
+    }
+
+    private void throwExceptionIfStatusNotExists(String providedStatus) {
+        if (providedStatus != null && !Status.isValueExists(providedStatus)) {
+            throw new IllegalArgumentException("Status does not exist");
+        }
     }
 }

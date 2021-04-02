@@ -24,6 +24,10 @@ public enum Status {
         this.label = label;
     }
 
+    public static boolean isValueExists(String value) {
+        return collectValues().contains(value);
+    }
+
     public static List<String> collectValues() {
         return Stream.of(Status.values())
             .map(Status::getLabel)
