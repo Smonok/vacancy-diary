@@ -42,5 +42,3 @@ _src/main/java/pro/inmost/vacancydiary/model/Status.java_ and extend the enum<br
 `vacancies/users/{id}/email` - send email for user by id. 
 Email will be sent for all vacancies with the status _Waiting for feedback_, if at the current moment of the request a week has passed since the moment when this status was set **POST**<br>
  
-
->>>>>>> f05f893fb729c46646a65169585d5b2c949a7f41
