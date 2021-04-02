@@ -21,15 +21,16 @@ _src/main/java/pro/inmost/vacancydiary/model/Status.java_ and extend the enum<br
 ###### When the application starts, the database will be automatically filled with some values
 #### API Requests 
 ###### By default starts from _localhost:8090/diary/_
-
-`users` - find all users  **GET**<br>
+`authenticate` - generate bearer token **POST**<br>
+<br>
+`users` - find all users **GET**<br>
 `users/{id}` - find user by id **GET**<br>
 `users` - create user **POST**<br>
 `users/{id}` - update user by id **PUT**<br>
 `users/{id}` - delete user by id **DELETE**<br>
-`users/register` - register user **POST**<br>
-`users/login` - login user **POST**<br>
+
 <br>
+
 `vacancies` - find all vacancies  **GET**<br>
 `vacancies/{id}` - find vacancy by id **GET**<br>
 `vacancies` - create the vacancy **POST**<br>
